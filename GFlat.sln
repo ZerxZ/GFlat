@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFlat.Core", "src\GFlat.Core\GFlat.Core.csproj", "{8CD4CD9C-093A-4222-8938-3A362138762D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CA6E2392-3E4A-42D6-9E32-CD9FB2E71DD6}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GFlat.FSharp", "src\GFlat.FSharp\GFlat.FSharp.fsproj", "{AEE603CC-0C43-4B0C-8326-B3029C2415E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFlat.Godot", "src\GFlat.Godot\GFlat.Godot.csproj", "{294A44B4-079F-43FF-8374-3B1970D203BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CD4CD9C-093A-4222-8938-3A362138762D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD4CD9C-093A-4222-8938-3A362138762D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD4CD9C-093A-4222-8938-3A362138762D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD4CD9C-093A-4222-8938-3A362138762D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEE603CC-0C43-4B0C-8326-B3029C2415E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEE603CC-0C43-4B0C-8326-B3029C2415E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEE603CC-0C43-4B0C-8326-B3029C2415E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEE603CC-0C43-4B0C-8326-B3029C2415E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{294A44B4-079F-43FF-8374-3B1970D203BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{294A44B4-079F-43FF-8374-3B1970D203BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{294A44B4-079F-43FF-8374-3B1970D203BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{294A44B4-079F-43FF-8374-3B1970D203BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8CD4CD9C-093A-4222-8938-3A362138762D} = {CA6E2392-3E4A-42D6-9E32-CD9FB2E71DD6}
+		{AEE603CC-0C43-4B0C-8326-B3029C2415E1} = {CA6E2392-3E4A-42D6-9E32-CD9FB2E71DD6}
+		{294A44B4-079F-43FF-8374-3B1970D203BC} = {CA6E2392-3E4A-42D6-9E32-CD9FB2E71DD6}
+	EndGlobalSection
+EndGlobal
