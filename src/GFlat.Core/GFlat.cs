@@ -23,65 +23,43 @@ public class GFlat
 
     private static void Main(string[] args)
     {
-
-        Console.WriteLine($"Has BFlat: {BFlatBuilder.HasBFlat()} Has Dotnet: {DotNetBuilder.HasDotnet()}");
-        Parser.Default.ParseArguments<CommandLine.Option>(args).WithParsed(option =>
+        if (!BFlatBuilder.HasBFlat() || !DotNetBuilder.HasDotnet())
         {
-            var fullPath  = Path.GetFullPath(option.Path);
-            var directory = Path.GetDirectoryName(fullPath)!;
-            Logger.WriteLineInfo("Building...");
-            Logger.WriteLineInfo($"Directory: {directory}");
-            Logger.WriteLineInfo($"Directory: {fullPath}");
-            Logger.WriteLineInfo($"Input: {option.Path}");
-            var pathType = PathType.File;
-            if (File.Exists(fullPath))
+            return;
+        }
+        Parser.Default.ParseArguments<CommandLine.Option>(args).WithParsed(option =>
             {
-                pathType = PathType.File;
-            }
-            else if (Directory.Exists(fullPath))
-            {
-                pathType = PathType.Directory;
-            }
-            else
-            {
-                Logger.WriteLineError("File or directory not found: " + fullPath);
-                return;
-            }
-            if (option.Tiny)
-            {
-                Logger.WriteLineInfo("Building tiny");
-            }
-            else
-            {
-
-                Logger.WriteLineInfo("Building normal");
-            }
-            if (pathType == PathType.Directory)
-            {
-
-                DotNetBuilder.BuildAll(fullPath, fullPath + "123", option.Release ? BuildType.Release : BuildType.Debug, (projectPath, outputPath, buildType) =>
+                var fullPath = Path.GetFullPath(option.Path);
+                var directory = Path.GetDirectoryName(fullPath)!;
+                Logger.WriteLineInfo("Building...");
+                Logger.WriteLineInfo($"Directory: {directory}");
+                Logger.WriteLineInfo($"Directory: {fullPath}");
+                Logger.WriteLineInfo($"Input: {option.Path}");
+                var pathType = PathType.File;
+                if (File.Exists(fullPath))
                 {
-                    BFlatBuilder.Build(outputPath, outputPath, Platform.Linux, Architecture.X86_64, DotNetBuilder.GetDll(outputPath), option.Tiny);
-                });
-            }
-            else if (option.Path.EndsWith(".csproj"))
-            {
-                Logger.WriteLineInfo("Building dotnet project");
-                if (DotNetBuilder.Build(directory, directory + "123", option.Release ? BuildType.Release : BuildType.Debug, (projectPath, outputPath, buildType) =>
-                    {
-                        BFlatBuilder.Build(outputPath, outputPath, Platform.Linux, Architecture.X86_64, DotNetBuilder.GetDll(outputPath), option.Tiny);
-                    }))
+                    pathType = PathType.File;
+                }
+                else if (Directory.Exists(fullPath))
                 {
-                    Logger.WriteLineInfo("Dotnet project built successfully");
+                    pathType = PathType.Directory;
                 }
                 else
                 {
-                    Logger.WriteLineError("Dotnet project build failed");
+                    Logger.WriteLineError("File or directory not found: " + fullPath);
+                    return;
+                }
+                if (option.Tiny)
+                {
+                    Logger.WriteLineInfo("Building tiny");
+                }
+                else
+                {
+
+                    Logger.WriteLineInfo("Building normal");
                 }
             }
-
-
-        });
+        );
     }
 
 

@@ -1,13 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version>0.0.1</Version>
+        <Title>GFlatGodot</Title>
+        <Authors>Zerxz</Authors>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <RepositoryUrl>https://github.com/ZerxZ/GFlat</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+        <IncludeSymbols>true</IncludeSymbols>
+        <Copyright>AGPL-3.0 license</Copyright>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageTags>Godot Godot-Dotnet</PackageTags>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Godot.Bindings" Version="4.3.0-dev" />
     </ItemGroup>
-
+    <ItemGroup>
+        <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>
