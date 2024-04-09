@@ -12,6 +12,6 @@ public sealed class GodotInitializerAttribute : Attribute
     public string              EntrySymbol          { get; }
     public string?             CompatibilityMinimum { get; set; } = "4.1";
     public string?             CompatibilityMaximum { get; set; } = null;
-    public bool?               Reloadable           { get; set; } = false;
+    public bool               Reloadable           { get; set; } = false;
 
 }

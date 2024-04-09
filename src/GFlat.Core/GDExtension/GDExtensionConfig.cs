@@ -14,9 +14,9 @@ public class GdExtensionConfig
     {
         Libraries[platform] = path;
     }
-    public void RegisterLibrary(Platform platform, Architecture architecture, BuildType buildType, string path)
+    public void RegisterLibrary(TargetPlatform targetPlatform, Architecture architecture, BuildType buildType, string path)
     {
-        Libraries[$"{platform.GetNameLower()}.{buildType.GetNameLower()}.{architecture.GetNameLower()}"] = path;
+        Libraries[$"{targetPlatform.GetNameLower()}.{buildType.GetNameLower()}.{architecture.GetNameLower()}"] = path;
     }
     public static GdExtensionConfig Parse(string iniConfig)
     {

@@ -33,20 +33,26 @@ public static class BFlatBuilder
         InitBFlat = true;
         return true;
     }
-    public static bool Build(string input, string output, Platform platform, Architecture architecture, ReadOnlySpan<string> reference, bool isTiny = false)
+    public static bool Build(string input, string output, TargetPlatform targetPlatform, Architecture architecture, ReadOnlySpan<string> reference, BuildType buildType, bool isTiny = false)
     {
         if (!HasBFlat())
         {
             return false;
         }
-        _sb.Append($"build  \"{input}\" -o \"{output}\" --target Shared");
-        _sb.Append($" --os {platform switch
+        var outputFile = $"{Path.GetFileNameWithoutExtension(input)}.{targetPlatform.GetNameLower()}.{buildType.GetNameLower()}.{architecture.GetNameLower()}.{targetPlatform switch
         {
-            Platform.Windows => "windows",
-            Platform.Linux   => "linux",
-            _                => "linux"
+            TargetPlatform.Windows => "dll",
+            TargetPlatform.Linux   => "so",
+            _                      => "so"
+        }}";
+        _sb.Append($"build  ./{Path.GetFileName(input)} -o:{outputFile} --target:shared");
+        _sb.Append($" --os:{targetPlatform switch
+        {
+            TargetPlatform.Windows => "windows",
+            TargetPlatform.Linux   => "linux",
+            _                      => "linux"
         }}");
-        _sb.Append($" --arch {architecture switch
+        _sb.Append($" --arch:{architecture switch
         {
             Architecture.X86_32 => "x86",
             Architecture.X86_64 => "x64",
@@ -59,18 +65,34 @@ public static class BFlatBuilder
         }
         foreach (var r in reference)
         {
-            _sb.Append($" -r \"{r}\"");
+            _sb.Append($" -r:{Path.GetRelativePath(Path.GetDirectoryName(input)!, r)}");
         }
         try
         {
-            var process = Process.Start(GFlat.GetProcessStartInfo(BFlat, _sb.ToString()));
+            var args = _sb.ToString();
+            Logger.WriteLineInfo("Building BFlat: " + args);
+            var info = GFlat.GetProcessStartInfo(BFlat, args);
+            info.WorkingDirectory = Path.GetDirectoryName(input)!;
+            var process = Process.Start(info);
             process!.WaitForExit();
+            var error = process.StandardError.ReadToEnd();
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                Logger.WriteLineError(error);
+                Logger.WriteLineError("Failed to build BFlat:  bflat " + input);
+
+                return false;
+            }
             Logger.WriteLineInfo(process.StandardOutput.ReadToEnd());
+            var outputFilePath = Path.Combine(output,                        outputFile);
+            var buildPath      = Path.Combine(Path.GetDirectoryName(input)!, outputFile);
+            File.Copy(buildPath, outputFilePath, true);
+            Logger.WriteLineInfo($"bflat build output: {buildPath} built to {outputFilePath}");
         }
         catch (Exception e)
         {
             Logger.WriteLineError(e.Message);
-            Logger.WriteLineError("Failed to build BFlat: " + input);
+            Logger.WriteLineError("Failed to build BFlat: bflat " + input);
             return false;
         }
 

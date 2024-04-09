@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GFlat.FSharp\GFlat.FSharp.fsproj" />
+      <ProjectReference Include="..\GFlat.Godot\GFlat.Godot.csproj" />
     </ItemGroup>
 
 </Project>

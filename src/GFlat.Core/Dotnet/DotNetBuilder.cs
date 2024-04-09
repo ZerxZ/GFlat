@@ -6,8 +6,8 @@ namespace GFlat.Dotnet;
 
 public static class DotNetBuilder
 {
-    public const  string  Dotnet     = "dotnet";
-    public static bool    InitDotnet = false;
+    public const string Dotnet = "dotnet";
+    public static bool InitDotnet = false;
     public static ILogger Logger => ConsoleLogger.Unicode;
     public static bool HasDotnet()
     {
@@ -31,7 +31,7 @@ public static class DotNetBuilder
         InitDotnet = true;
         return true;
     }
-    public static bool Build(string projectPath, string outputPath, BuildType buildType,Action<string,string,BuildType> onBuild)
+    public static bool Build(string projectPath, string outputPath, BuildType buildType)
     {
         if (!HasDotnet())
         {
@@ -47,7 +47,6 @@ public static class DotNetBuilder
             var process = Process.Start(GFlat.GetProcessStartInfo(Dotnet, $"publish \"{projectPath}\" -c {buildType.GetName()} -o \"{outputPath}\""));
             process!.WaitForExit();
             Logger.WriteLineInfo("Project built successfully");
-            onBuild(projectPath, outputPath, buildType);
         }
         catch (Exception e)
         {
@@ -55,17 +54,18 @@ public static class DotNetBuilder
             Logger.WriteLineError("Failed to build project: " + projectPath);
             return false;
         }
-        
+
         return true;
     }
     public static ReadOnlySpan<string> SearchProjects(string path, string searchPattern = "*.csproj")
     {
         return Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories).ToArray();
     }
-    public static bool BuildAll(string path, string outputPath, BuildType buildType, Action<string, string, BuildType> onBuild)
+    public static ReadOnlySpan<string> BuildAll(string path, string outputPath, BuildType buildType)
     {
         Logger.WriteLineInfo("Building all projects in: " + path);
         var projects = GetProjects(path);
+        var projectBuildList = new List<string>();
         foreach (var project in projects)
         {
             Logger.WriteLineInfo("Building project: " + project);
@@ -75,15 +75,16 @@ public static class DotNetBuilder
                 continue;
             }
 
-            if (Build(project, outputPath, buildType, onBuild))
+            if (Build(project, outputPath, buildType))
             {
+                projectBuildList.Add(project);
                 continue;
             }
             Logger.WriteLineError("Failed to build project: " + project);
-            return false;
+            return [];
         }
         Logger.WriteLineInfo("All projects built successfully");
-        return true;
+        return projectBuildList.ToArray();
     }
     public static ReadOnlySpan<string> GetProjects(string path, string searchPattern = "*.csproj")
     {
@@ -92,7 +93,11 @@ public static class DotNetBuilder
     }
     public static ReadOnlySpan<string> GetDll(string path)
     {
-        return Directory.EnumerateFiles(path, "*.dll", SearchOption.AllDirectories).ToArray();
+        return Directory.GetFiles(path, "*.dll", SearchOption.AllDirectories).ToArray();
+    }
+    public static ReadOnlySpan<string> GetCsharpFiles(string path)
+    {
+        return Directory.GetFiles(path, "*.cs", SearchOption.TopDirectoryOnly).ToArray();
     }
     public static bool HasPackage(string path, params string[] packages)
     {

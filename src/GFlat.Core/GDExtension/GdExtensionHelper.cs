@@ -1,6 +1,15 @@
 ﻿namespace GFlat.GDExtension;
 
-public enum Platform
+
+
+public enum PathType
+{
+    File,
+    Directory,
+    None
+}
+
+public enum TargetPlatform
 {
     Windows,
     Linux,
@@ -17,14 +26,12 @@ public enum Architecture
     Rv64
 }
 
-
-
 public enum BuildType
 {
     Debug,
     Release,
+    All
 }
-
 
 public static class GdExtensionHelper
 {

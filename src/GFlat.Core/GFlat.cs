@@ -6,15 +6,11 @@ using GFlat.CommandLine;
 using GFlat.Dotnet;
 using GFlat.GDExtension;
 using GFlat.Loggers;
+using Godot;
+using Newtonsoft.Json;
 using Tomlet;
 
 namespace GFlat;
-
-public enum PathType
-{
-    File,
-    Directory
-}
 
 public class GFlat
 {
@@ -23,41 +19,21 @@ public class GFlat
 
     private static void Main(string[] args)
     {
+
         if (!BFlatBuilder.HasBFlat() || !DotNetBuilder.HasDotnet())
         {
             return;
         }
         Parser.Default.ParseArguments<CommandLine.Option>(args).WithParsed(option =>
             {
-                var fullPath = Path.GetFullPath(option.Path);
-                var directory = Path.GetDirectoryName(fullPath)!;
-                Logger.WriteLineInfo("Building...");
-                Logger.WriteLineInfo($"Directory: {directory}");
-                Logger.WriteLineInfo($"Directory: {fullPath}");
-                Logger.WriteLineInfo($"Input: {option.Path}");
-                var pathType = PathType.File;
-                if (File.Exists(fullPath))
+                Logger.WriteLineInfo($"JSON: {JsonConvert.SerializeObject(option)}");
+                var builder = new GFlatBuilder
                 {
-                    pathType = PathType.File;
-                }
-                else if (Directory.Exists(fullPath))
-                {
-                    pathType = PathType.Directory;
-                }
-                else
-                {
-                    Logger.WriteLineError("File or directory not found: " + fullPath);
-                    return;
-                }
-                if (option.Tiny)
-                {
-                    Logger.WriteLineInfo("Building tiny");
-                }
-                else
-                {
+                    Option = option
+                };
 
-                    Logger.WriteLineInfo("Building normal");
-                }
+                builder.Execute();
+
             }
         );
     }
