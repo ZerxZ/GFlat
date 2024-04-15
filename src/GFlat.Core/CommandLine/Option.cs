@@ -25,10 +25,10 @@ public class Option
         value = default;
         return PlatformArchitecture.TryGetValue(platform.ToLower(), out value);
     }
-    [Value(0, MetaName = "path", Required = true, HelpText = "Input file or directory path.")]
-    public string InpurPath { get; set; }
-    [Value(1, MetaName = "output", Required = true, HelpText = "Output path.")]
-    public string OutputPath { get; set; }
+    [Value(0, MetaName = "build-mode", Required = true, HelpText = "<build|build-il>")]
+    public string BuildMode { get; set; }
+    [Value(1, MetaName = "input", Required = true, HelpText = "Input project path")]
+    public string InputPath { get; set; }
 
     [Option("tiny", Required = false, HelpText = "Tiny option")]
     public bool Tiny { get; set; }
@@ -37,9 +37,11 @@ public class Option
 
     [Option("release", Required = false, HelpText = "<Release|Debug|All>")]
     public string Release { get; set; }
-    [Option('p', "platform", Required = false, HelpText = "<win-x86|win-x64|linux-x86|linux-x64|linux-arm64|linux-rv64|macos-x64|android-arm64|android-x86|android-x64|ios-arm64|ios-x64>")]
-    public  IEnumerable<string> Platform { get; set; } = new List<string>();
-    public string   FullPath      => Path.GetFullPath(InpurPath);
+    [Option('p', "platform",
+        Required = false,
+        HelpText = "<win-x86|win-x64|linux-x86|linux-x64|linux-arm64|linux-rv64|macos-x64|android-arm64|android-x86|android-x64|ios-arm64|ios-x64>")]
+    public IEnumerable<string> Platform { get; set; } = new List<string>();
+    public string   FullPath      => Path.GetFullPath(InputPath);
     public string   DirectoryPath => Path.GetDirectoryName(FullPath)!;
     public string   FileName      => Path.GetFileNameWithoutExtension(FullPath);
     public PathType PathType      => File.Exists(FullPath) ? PathType.File : Directory.Exists(FullPath) ? PathType.Directory : PathType.None;

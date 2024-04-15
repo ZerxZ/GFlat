@@ -1,1 +1,1 @@
-# GFlat
+# GFlat - GodotExtension C# compiler based on [bflat](https://github.com/bflattened/bflat)

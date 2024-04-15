@@ -21,33 +21,30 @@ namespace GFlat
             {
                 Logger.WriteLineInfo("Release option is enabled.");
             }
-            Logger.WriteLineInfo($"Input path: {Option.InpurPath}");
-            Logger.WriteLineInfo($"Output path: {Option.OutputPath}");
+            Logger.WriteLineInfo($"Input path: {Option.InputPath}");
             switch (Option.PathType)
             {
                 case PathType.File:
                     Logger.WriteLineInfo("Path type: File");
                     var directoryPath = Option.DirectoryPath;
                     Logger.WriteLineInfo($"Directory path: {directoryPath}");
-                    var temp = Path.Combine(directoryPath, "temp");
-                    if (Directory.Exists(temp))
-                    {
-                        Directory.Delete(temp, true);
-                    }
+                    var tempPath = Path.GetTempFileName();
+                    File.Delete(tempPath);
+                    Directory.CreateDirectory(tempPath);
 
-                    DotNetBuilder.Build(directoryPath, temp, BuildType.Debug);
+                    DotNetBuilder.Build(directoryPath, tempPath, BuildType.Debug);
                     var csharpFiles = DotNetBuilder.GetCsharpFiles(directoryPath);
-                    var info        = csharpFiles.ToArray().Select(cs => CsharpParser.Parse(File.ReadAllText(cs))).FirstOrDefault(x => x != null);
+                    var info        = CsharpParser.ParseFiles(csharpFiles);
                     if (info == null)
                     {
                         Logger.WriteLineError("Godot initializer not found.");
                         return;
                     }
                     var generatedScript = GdExtensionBuilder.GetExtensionGeneratedScript(info);
-                    var csPath          = Path.Combine(temp, $"{Option.FileName}.cs");
+                    var csPath          = Path.Combine(tempPath, $"{Option.FileName}.cs");
                     File.WriteAllText(csPath, generatedScript);
-                
-                    BFlatBuilder.Build(csPath, Option.OutputPath, TargetPlatform.Windows, Architecture.X86_64, DotNetBuilder.GetDll(temp), BuildType.Debug, Option.Tiny);
+
+                    // BFlatBuilder.Build(csPath, Option.OutputPath, TargetPlatform.Windows, Architecture.X86_64, DotNetBuilder.GetDll(tempPath), BuildType.Debug, Option.Tiny);
                     // Directory.Delete(temp, true);
                     break;
                 case PathType.Directory:

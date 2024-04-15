@@ -1,7 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
+using System.Text.RegularExpressions;
 using GFlat.Loggers;
 
 namespace GFlat.Dotnet
@@ -19,9 +21,51 @@ namespace GFlat.Dotnet
         public string Reloadable;
     }
 
-    public class CsharpParser
+    public partial class CsharpParser
     {
+        [GeneratedRegex("(GodotInitializer)")]
+        public static partial Regex GodotInitializerRegex();
         public static ILogger Logger => ConsoleLogger.Unicode;
+        public static GFlatGodotInfo? ParseFiles(ReadOnlySpan<string> files)
+        {
+
+            var regex = GodotInitializerRegex();
+            foreach (var file in files)
+            {
+                var code = File.ReadAllText(file);
+                if (!regex.Match(code).Success)
+                {
+                    continue;
+                }
+                var info = Parse(code);
+                if (info != null)
+                {
+                    return info;
+                }
+            }
+
+            return null;
+        }
+        public static GFlatGodotInfo? ParseFiles(IEnumerable<string> files)
+        {
+
+            var regex = GodotInitializerRegex();
+            foreach (var file in files)
+            {
+                var code = File.ReadAllText(file);
+                if (!regex.Match(code).Success)
+                {
+                    continue;
+                }
+                var info = Parse(code);
+                if (info != null)
+                {
+                    return info;
+                }
+            }
+
+            return null;
+        }
         public static GFlatGodotInfo? Parse(string code)
         {
             Logger.WriteLineInfo("Parsing C# code...");
@@ -30,7 +74,7 @@ namespace GFlat.Dotnet
             var tree      = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(LanguageVersion.Latest));
             var root      = tree.GetCompilationUnitRoot();
             var rootNodes = root.DescendantNodes();
-            
+
             var @namespace = rootNodes.OfType<FileScopedNamespaceDeclarationSyntax>().FirstOrDefault()?.Name ?? rootNodes.OfType<NamespaceDeclarationSyntax>().FirstOrDefault()?.Name;
 
             var classDeclarationSyntaxes = rootNodes.OfType<ClassDeclarationSyntax>();
@@ -52,7 +96,7 @@ namespace GFlat.Dotnet
                 };
                 if (@namespace is not null)
                 {
-                    info.Namespace =  @namespace.ToString().Trim();
+                    info.Namespace = @namespace.ToString().Trim();
                 }
                 var arguments = godotInitializer.ArgumentList!.Arguments;
                 if (arguments.Count > 2)

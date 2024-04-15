@@ -97,7 +97,7 @@ public static class DotNetBuilder
     }
     public static ReadOnlySpan<string> GetCsharpFiles(string path)
     {
-        return Directory.GetFiles(path, "*.cs", SearchOption.TopDirectoryOnly).ToArray();
+        return Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories).ToArray();
     }
     public static bool HasPackage(string path, params string[] packages)
     {
